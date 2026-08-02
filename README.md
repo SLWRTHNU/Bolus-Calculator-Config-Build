@@ -71,8 +71,7 @@ loop-bolus-calculator/
 ├── js/
 │   ├── app.js              # Main entry, state, routing
 │   ├── auth.js             # Google OAuth 2.0 PKCE
-│   ├── drive.js            # Drive API — folders, config.json
-│   ├── sheets.js           # Sheets API — food chart, log export
+│   ├── drive.js            # Drive API — folders, config.json, sheets
 │   ├── nightscout.js       # Nightscout REST API
 │   ├── dexcom.js           # Dexcom Share API
 │   ├── calculator.js       # Bolus math

@@ -155,4 +155,7 @@ export function disconnect() {
   storage.remove('drive_folder_id');
   storage.remove('food_sheet_id');
   storage.remove('log_folder_id');
+  storage.remove('drive_config_folder_id');
+  storage.remove('drive_exports_folder_id');
+  storage.clear('meal_log_sheet_');
 }
