@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="custom">
+  <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="Insulin bolus calculator for Type 1 diabetes management. Guest mode + Google Drive sync." />
+  <meta name="theme-color" content="#0F6E56" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Bolus Calc" />
+  <title>Bolus Calculator</title>
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+  <link rel="icon" type="image/png" href="/icons/icon-192.png" />
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+
+  <!-- ── Header ──────────────────────────────────────────────────────────── -->
+  <header class="app-header">
+    <span class="app-logo">Bolus Calc</span>
+
+    <nav class="desktop-nav" aria-label="Main navigation">
+      <button class="nav-btn active" data-nav="calculator">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 8h2m4 0h2M8 12h2m4 0h2M8 16h2m4 0h2"/></svg>
+        Calculator
+      </button>
+      <button class="nav-btn" data-nav="log">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        Log
+      </button>
+      <button class="nav-btn" data-nav="how-to">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
+        How-To
+      </button>
+      <button class="nav-btn" data-nav="contact">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        Contact
+      </button>
+      <button class="nav-btn" data-nav="donate">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+        Donate
+      </button>
+      <button class="nav-btn" data-nav="settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        Settings
+      </button>
+
+      <div class="tools-wrapper">
+        <button id="tools-btn" aria-haspopup="true" aria-controls="tools-dropdown">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M12 5v14M5 12h14"/></svg>
+          Tools ▾
+        </button>
+        <div class="tools-dropdown" id="tools-dropdown" hidden role="menu">
+          <p class="tools-dropdown-note" id="guest-export-note" hidden>Exports will download as a file while offline.</p>
+          <button id="tools-export-current" role="menuitem">Export Current Meal</button>
+          <button id="tools-clear-current" role="menuitem">Clear Current Meal</button>
+          <button id="tools-export-all" role="menuitem">Export All Sheets (Today)</button>
+          <button id="tools-recipe" role="menuitem">Recipe Builder</button>
+          <button id="tools-food-search" role="menuitem">Food Search</button>
+          <button id="tools-add-food" role="menuitem">Add Food to Chart</button>
+          <button id="tools-tracker" role="menuitem">Post-Meal BG Tracker</button>
+          <button id="tools-restore-draft" role="menuitem">Restore from Draft</button>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <div class="calculator-layout" id="calculator-layout">
+    <div class="calculator-content">
+      <main class="app-main" id="main">
+
+        <!-- ════════════════════════════════════════════════════════════════
+             SECTION: CALCULATOR
+        ════════════════════════════════════════════════════════════════ -->
+        <section class="section" id="calculator" aria-label="Calculator">
+
+          <!-- Mobile stats strip -->
+          <div class="mobile-stats-strip" id="mobile-stats-strip">
+            <button class="mobile-stat" data-calc-tab="factors">
+              <span class="mobile-stat__label">BG</span>
+              <span class="mobile-stat__value" id="strip-bg">—</span>
+            </button>
+            <div class="mobile-stat-divider"></div>
+            <button class="mobile-stat" data-calc-tab="entry">
+              <span class="mobile-stat__label">Carbs</span>
+              <span class="mobile-stat__value" id="strip-carbs">0 g</span>
+            </button>
+            <div class="mobile-stat-divider"></div>
+            <button class="mobile-stat" data-calc-tab="dose">
+              <span class="mobile-stat__label">Bolus</span>
+              <span class="mobile-stat__value mobile-stat__value--accent" id="strip-bolus">0.00 U</span>
+            </button>
+          </div>
+
+          <div class="meal-tabs" id="meal-tabs" role="tablist" aria-label="Meal selection"></div>
+
+          <!-- Calculator grid: 1fr 1fr 240px × auto auto -->
+          <div class="calc-tab-panel active" id="calc-tab-entry">
+          <div class="calc-grid calc-grid--entry">
+
+            <!-- Card 1: Food Entry (col 1, row 1) -->
+            <div class="card food-entry-card" style="grid-column:1;grid-row:1">
+              <div class="card__title">Food Entry</div>
+
+              <!-- Standard mode -->
+              <div id="entry-standard-mode">
+                <div class="inline-field">
+                  <label class="inline-label" for="entry-food-search">Food</label>
+                  <div class="food-search-wrapper">
+                    <input type="text" class="input input--sm" id="entry-food-search" placeholder="Search food…" autocomplete="off" />
+                  </div>
+                  <span class="inline-unit food-entry-unit"></span>
+                </div>
+                <div class="inline-field">
+                  <label class="inline-label" for="entry-cf">CF</label>
+                  <input type="number" class="input input--sm entry-cf-input" id="entry-cf" placeholder="—" readonly tabindex="-1" />
+                  <span class="inline-unit food-entry-unit"></span>
+                </div>
+                <div class="inline-field">
+                  <label class="inline-label" for="entry-weight">Weight</label>
+                  <input type="number" class="input input--sm" id="entry-weight" placeholder="g" min="0" step="1" aria-label="Weight in grams" />
+                  <span class="inline-unit">g</span>
+                </div>
+                <div class="inline-field">
+                  <label class="inline-label" for="entry-carbs">Carbs</label>
+                  <input type="number" class="input input--sm" id="entry-carbs" placeholder="g" min="0" step="0.1" aria-label="Carbs in grams" />
+                  <span class="inline-unit">g</span>
+                </div>
+                <div class="entry-btn-row">
+                  <button class="btn btn--primary entry-add-btn" id="add-food-btn">+ Add to Meal</button>
+                  <button class="btn btn--secondary entry-custom-btn" id="custom-food-toggle-btn">+ Custom</button>
+                </div>
+              </div>
+
+              <!-- Custom mode (in-place, replaces standard fields) -->
+              <div id="entry-custom-mode" hidden>
+                <div class="inline-field">
+                  <label class="inline-label" for="custom-name">Name</label>
+                  <input type="text" class="input input--sm" id="custom-name" placeholder="Food name" />
+                  <span class="inline-unit food-entry-unit"></span>
+                </div>
+                <div class="inline-field">
+                  <label class="inline-label" for="custom-cf">CF</label>
+                  <input type="number" class="input input--sm" id="custom-cf" placeholder="e.g. 0.5" step="0.001" min="0" />
+                  <span class="inline-unit food-entry-unit"></span>
+                </div>
+                <div class="inline-field">
+                  <label class="inline-label" for="custom-weight">Weight</label>
+                  <input type="number" class="input input--sm" id="custom-weight" placeholder="g" min="0" step="1" aria-label="Custom weight in grams" />
+                  <span class="inline-unit">g</span>
+                </div>
+                <div class="inline-field">
+                  <label class="inline-label" for="custom-carbs">Carbs</label>
+                  <input type="number" class="input input--sm" id="custom-carbs" placeholder="g" min="0" step="0.1" aria-label="Custom carbs in grams" />
+                  <span class="inline-unit">g</span>
+                </div>
+                <div class="entry-btn-row">
+                  <button class="btn btn--primary entry-add-btn" id="custom-add-btn">+ Add to Meal</button>
+                  <button class="btn btn--secondary entry-custom-btn" id="custom-cancel-btn">Cancel</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 2: Factors (col 2, row 1) -->
+            <div class="card" id="bg-panel" style="grid-column:2;grid-row:1;position:relative">
+              <div class="card__title">Factors</div>
+
+              <div class="inline-field">
+                <label class="inline-label" for="bg-value">Current BG</label>
+                <input type="number" class="input input--sm" id="bg-value" placeholder="—" step="0.1" min="0" aria-label="Current blood glucose" />
+                <span class="inline-unit bg-unit-label">mmol/L</span>
+                <button class="btn btn--icon btn--sm fetch-btn" id="fetch-bg-btn" hidden title="Refresh from connected source">↻</button>
+              </div>
+              <div class="bg-timestamp" id="bg-timestamp" hidden></div>
+
+              <div class="inline-field">
+                <label class="inline-label" for="target-bg-input">Target BG</label>
+                <input type="number" class="input input--sm" id="target-bg-input" placeholder="—" min="0" step="0.1" aria-label="Target blood glucose" />
+                <span class="inline-unit bg-unit-label">mmol/L</span>
+              </div>
+
+              <div class="inline-field">
+                <label class="inline-label" for="icr-input">ICR</label>
+                <input type="number" class="input input--sm" id="icr-input" placeholder="—" min="1" step="0.5" aria-label="Insulin to carb ratio" />
+                <span class="inline-unit">g / U</span>
+              </div>
+
+              <div class="inline-field">
+                <label class="inline-label" for="isf-input">ISF</label>
+                <input type="number" class="input input--sm" id="isf-input" placeholder="—" min="0.1" step="0.1" aria-label="Insulin sensitivity factor" />
+                <span class="inline-unit isf-unit-label">mmol/L per U</span>
+              </div>
+
+              <button class="btn btn--secondary btn--sm" id="fetch-profile-btn" hidden style="margin-top:10px">
+                Pull from Nightscout
+              </button>
+
+              <div class="factors-sync-status" id="factors-sync-status" hidden>
+                Updated <span id="sync-ago">--:--</span> ago
+              </div>
+            </div>
+
+            <!-- Card 3: Insulin Dose (col 3, rows 1–2) -->
+            <div class="card bolus-summary-card" style="grid-column:3;grid-row:1/3" role="region" aria-label="Bolus summary" aria-live="polite">
+              <div class="card__title">Insulin Dose</div>
+              <div class="dual-stat-display">
+                <div class="dual-stat">
+                  <span class="dual-stat__label">Net Carbs</span>
+                  <div>
+                    <span class="dual-stat__value" id="summary-carbs-hero">0.0</span>
+                    <span class="dual-stat__unit">g</span>
+                  </div>
+                </div>
+                <div class="dual-stat-divider"></div>
+                <div class="dual-stat">
+                  <span class="dual-stat__label">Total Bolus</span>
+                  <div>
+                    <span class="dual-stat__value dual-stat__value--accent" id="summary-total">0.00</span>
+                    <span class="dual-stat__unit">U</span>
+                  </div>
+                </div>
+              </div>
+              <div class="bolus-breakdown">
+                <div class="bolus-line">
+                  <span class="bolus-line__label">Net Carbs</span>
+                  <span class="bolus-line__value" id="summary-carbs">0.0 g</span>
+                </div>
+                <div class="bolus-line">
+                  <span class="bolus-line__label">Meal Bolus</span>
+                  <span class="bolus-line__value" id="summary-meal-bolus">0.00 U</span>
+                </div>
+                <div class="bolus-line">
+                  <span class="bolus-line__label">Correction</span>
+                  <span class="bolus-line__value" id="summary-correction">0.00 U</span>
+                </div>
+                <div class="bolus-line">
+                  <span class="bolus-line__label">IOB</span>
+                  <span class="bolus-line__value" id="summary-iob">−0.00 U</span>
+                </div>
+              </div>
+              <button class="btn btn--primary btn--full" id="bolus-given-btn" style="margin-top:auto">
+                Bolus Given
+              </button>
+            </div>
+
+            <!-- Timing (col 1–2, row 2) -->
+            <div class="card timing-card" id="timing-card" style="grid-column:1/3;grid-row:2">
+              <div class="timing-bar">
+                <span class="timing-bar__label">Timing</span>
+                <div class="timing-row-inline">
+                  <label class="timing-inline-label">Bolus given at</label>
+                  <input type="time" class="input input--sm" id="bolus-time-input" aria-label="Bolus given at time" />
+                  <button class="set-btn" id="bolus-set-btn" title="Click to set current time" aria-label="Set bolus time to now">Set</button>
+                  <span class="bolus-locked-indicator" id="bolus-locked-indicator" hidden>
+                    <span class="bolus-locked-dot"></span>locked
+                  </span>
+                </div>
+                <div class="timing-row-inline">
+                  <label class="timing-inline-label">Meal started at</label>
+                  <input type="time" class="input input--sm" id="meal-time-input" aria-label="Meal started at time" />
+                  <button class="set-btn" id="meal-set-btn" title="Click to set current time" aria-label="Set meal time to now">Set</button>
+                </div>
+                <div class="minutes-between" id="minutes-between" hidden>
+                  <span class="minutes-between__label">Minutes between</span>
+                  <span class="minutes-between__value" id="minutes-between-value">—</span>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /calc-grid -->
+          </div><!-- /calc-tab-panel entry -->
+
+          <div class="calc-tab-panel" id="calc-tab-factors">
+          </div><!-- /calc-tab-panel factors -->
+
+          <div class="calc-tab-panel" id="calc-tab-dose">
+          </div><!-- /calc-tab-panel dose -->
+
+          <!-- Food List (full width) -->
+          <div class="card food-list-card" style="margin-top:16px">
+            <div class="card__title">Food List</div>
+            <div class="food-table-wrapper">
+              <table class="food-table">
+                <thead>
+                  <tr>
+                    <th class="food-col-name">Food</th>
+                    <th class="food-col-cf">CF</th>
+                    <th class="food-col-weight">Weight (g)</th>
+                    <th class="food-col-carbs">Carbs (g)</th>
+                    <th class="food-col-remove"></th>
+                  </tr>
+                </thead>
+                <tbody id="food-rows">
+                  <tr><td colspan="5" style="padding:16px;text-align:center;color:var(--text-2);font-size:.875rem">Add a food above to get started</td></tr>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td colspan="3" class="food-total-label">Total Carbs</td>
+                    <td class="food-total-value" id="food-total-carbs">0.0 g</td>
+                    <td></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+
+          <!-- Notes (full width) -->
+          <div class="card notes-card" style="margin-top:16px">
+            <div class="card__title">Notes</div>
+            <textarea class="input" id="meal-notes" rows="3" placeholder="Optional notes for this meal…" style="resize:vertical"></textarea>
+          </div>
+
+          <!-- Post-Meal BG Tracker (hidden by default) -->
+          <div class="card post-tracker-card" id="post-meal-tracker" hidden aria-label="Post-meal BG tracker" style="margin-top:16px">
+            <div class="card__title">
+              Post-Meal BG Tracker
+              <button class="btn btn--icon btn--sm" id="close-tracker-btn" aria-label="Close tracker">×</button>
+            </div>
+            <div class="tracker-controls">
+              <label for="tracking-interval">Interval</label>
+              <select class="input input--sm" id="tracking-interval">
+                <option value="15">15 min</option>
+                <option value="30" selected>30 min</option>
+                <option value="45">45 min</option>
+                <option value="60">60 min</option>
+              </select>
+              <button class="btn btn--secondary btn--sm" id="generate-times-btn">Generate times</button>
+            </div>
+            <div style="overflow-x:auto">
+              <table class="post-bg-table">
+                <thead>
+                  <tr>
+                    <th>Time</th><th>Min Since Bolus</th><th>BG</th><th>Trend</th><th>Delta</th><th></th>
+                  </tr>
+                </thead>
+                <tbody id="post-bg-rows"></tbody>
+              </table>
+            </div>
+            <button class="btn btn--secondary btn--sm mt-8" id="add-bg-row-btn">+ Add Reading</button>
+          </div>
+
+          <div class="disclaimer" style="margin-top:16px">
+            <strong>Nutritional data sourced from Health Canada's <em>Nutrient Value of Some Common Foods</em> (2008).</strong>
+            Carb factors are approximate and derived from published values. Always verify with a qualified healthcare professional.
+            The developers make no warranties regarding nutritional data accuracy and accept no liability for decisions made based on this calculator.
+          </div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════════════════
+             SECTION: TODAY'S LOG
+        ════════════════════════════════════════════════════════════════ -->
+        <section class="section section--contained" id="log" hidden aria-label="Today's log">
+          <h1 class="page-title">Today's Log</h1>
+          <div id="log-entries">
+            <p class="empty-state">No meals logged today.</p>
+          </div>
+          <div class="btn-row mt-12">
+            <button class="btn btn--secondary" id="export-log-btn">Export to Drive</button>
+          </div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════════════════
+             SECTION: HOW-TO
+        ════════════════════════════════════════════════════════════════ -->
+        <section class="section section--contained" id="how-to" hidden aria-label="How to use">
+          <div class="how-to-placeholder">
+            <h1>How to Use Bolus Calculator</h1>
+            <p class="text-muted mt-12">Step-by-step guides coming soon.</p>
+            <div class="mt-12">
+              <p class="text-muted">Having trouble? <a href="#contact" onclick="navigate('contact')">Contact us</a></p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════════════════
+             SECTION: CONTACT
+        ════════════════════════════════════════════════════════════════ -->
+        <section class="section section--contained" id="contact" hidden aria-label="Contact">
+          <h1 class="page-title">Contact</h1>
+          <p class="contact-intro">If you have any questions, run into any issues, or just want to say hello, feel free to reach out using the form below. I'll do my best to get back to you when I can.</p>
+          <form class="contact-form" id="contact-form" action="https://formspree.io/f/xojrronz" method="POST">
+            <div class="field"><label for="contact-name">Name</label><input type="text" class="input" id="contact-name" name="name" required autocomplete="name" /></div>
+            <div class="field"><label for="contact-email">Email</label><input type="email" class="input" id="contact-email" name="email" required autocomplete="email" /></div>
+            <div class="field"><label for="contact-subject">Subject</label>
+              <select class="input" id="contact-subject" name="subject">
+                <option>General Question</option><option>Bug Report</option><option>Feature Request</option><option>Other</option>
+              </select>
+            </div>
+            <div class="field"><label for="contact-message">Message</label><textarea class="input" id="contact-message" name="message" rows="5" required style="resize:vertical"></textarea></div>
+            <button type="submit" class="btn btn--primary">Send Message</button>
+            <p class="contact-note">No SLA is guaranteed. I'll do my best to respond when I can.</p>
+          </form>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════════════════
+             SECTION: DONATE
+        ════════════════════════════════════════════════════════════════ -->
+        <section class="section section--contained" id="donate" hidden aria-label="Donate">
+          <h1 class="page-title">Support This Tool</h1>
+          <div class="donate-intro">
+            <p>Bolus Calculator is, and always will be, completely free to use.</p>
+            <p>Managing diabetes is exhausting — physically, mentally, and financially. If this tool makes even one mealtime a little easier, that's more than enough for me.</p>
+            <p>If you'd like to say thanks with a few dollars, I genuinely appreciate it. If you can't or don't want to, please don't. Using the tool for free is the whole point.</p>
+            <p>If you want to help but money's tight, telling another T1D family about this page means more than you know.</p>
+          </div>
+          <div class="donate-cards">
+            <a class="donate-card" href="https://paypal.me/kyleb2112" target="_blank" rel="noopener noreferrer">
+              <div class="donate-card__icon">🅿️</div>
+              <div class="donate-card__body"><div class="donate-card__title">PayPal</div><div class="donate-card__sub">Send via PayPal — you choose the amount</div></div>
+            </a>
+            <a class="donate-card" href="https://ko-fi.com/iriscalculator" target="_blank" rel="noopener noreferrer">
+              <div class="donate-card__icon">☕</div>
+              <div class="donate-card__body"><div class="donate-card__title">Ko-fi</div><div class="donate-card__sub">Buy me a coffee on Ko-fi</div></div>
+            </a>
+            <div class="donate-card" style="cursor:default">
+              <div class="donate-card__icon">🇨🇦</div>
+              <div class="donate-card__body"><div class="donate-card__title">E-Transfer (Canada only)</div><div class="donate-card__sub">Send to <strong>kyle.e.beaulieu@gmail.com</strong><br>No auto-deposit password needed.</div></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════════════════
+             SECTION: SETTINGS
+        ════════════════════════════════════════════════════════════════ -->
+        <section class="section section--contained" id="settings" hidden aria-label="Settings">
+          <h1 class="page-title">Settings</h1>
+
+          <div class="settings-section">
+            <h2>Connection</h2>
+            <div id="backend-status" class="drive-status">Checking…</div>
+          </div>
+
+          <hr class="divider" />
+
+          <div class="settings-section">
+            <h2>Google Drive (new — testing)</h2>
+            <div id="gdrive-status" class="drive-status">Not connected</div>
+            <p class="inline-note">Sign in with your own Google account so your data is stored in your own Drive, not a shared one.</p>
+            <div class="btn-row">
+              <button class="btn btn--secondary btn--sm" id="connect-drive-btn">Connect Google Drive</button>
+              <button class="btn btn--secondary btn--sm" id="disconnect-drive-btn" hidden>Disconnect</button>
+            </div>
+            <label class="checkbox-row" style="margin-top:12px">
+              <input type="checkbox" id="use-drive-backend-toggle" />
+              <span>Use Google Drive backend instead of Apps Script (testing — reloads the page)</span>
+            </label>
+          </div>
+
+          <hr class="divider" />
+
+          <div class="settings-section">
+            <h2>Nightscout</h2>
+            <div class="field"><label for="ns-url">Nightscout URL</label><input type="url" class="input" id="ns-url" placeholder="https://yoursite.herokuapp.com" autocomplete="off" /></div>
+            <div class="field">
+              <label for="ns-secret">API Secret</label>
+              <input type="password" class="input" id="ns-secret" placeholder="Optional" autocomplete="off" />
+              <p class="warning-note">⚠ Stored in your Google Drive config file</p>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn--secondary btn--sm" id="save-ns-btn">Save</button>
+              <button class="btn btn--secondary btn--sm" id="test-ns-btn">Test Connection</button>
+            </div>
+          </div>
+
+          <hr class="divider" />
+
+          <div class="settings-section">
+            <h2>Dexcom Share</h2>
+            <div class="field"><label for="dex-user">Dexcom Username</label><input type="text" class="input" id="dex-user" autocomplete="off" /></div>
+            <div class="field">
+              <label for="dex-pass">Dexcom Password</label>
+              <input type="password" class="input" id="dex-pass" autocomplete="off" />
+              <p class="warning-note">⚠ Stored in your Google Drive config file</p>
+            </div>
+            <div class="field"><label for="dex-region">Region</label>
+              <select class="input" id="dex-region">
+                <option value="us">US (share2.dexcom.com)</option>
+                <option value="international">International (shareous1.dexcom.com)</option>
+              </select>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn--secondary btn--sm" id="save-dex-btn">Save</button>
+              <button class="btn btn--secondary btn--sm" id="test-dex-btn">Test Connection</button>
+            </div>
+          </div>
+
+          <hr class="divider" />
+
+          <div class="settings-section">
+  <h2>Nightly Export</h2>
+  <label class="checkbox-row">
+    <input type="checkbox" id="nightly-export-enabled" checked />
+    <span>Automatically export and clear meals overnight</span>
+  </label>
+  <div class="field" style="margin-top:10px">
+    <label for="nightly-export-time">Export time</label>
+    <input type="time" class="input" id="nightly-export-time" value="03:00" />
+    <p class="inline-note">Recommend setting this at least 6 hours after your last
+      typical meal or snack, to allow the 5-hour post-meal tracking window to
+      complete. Only meals with a bolus given are exported.</p>
+  </div>
+</div>
+<hr class="divider" />
+
+          <div class="settings-section">
+            <h2>Display</h2>
+            <div class="field">
+              <label for="units-select">Blood glucose units</label>
+              <select class="input" id="units-select">
+                <option value="mmol">mmol/L</option>
+                <option value="mgdl">mg/dL</option>
+              </select>
+            </div>
+          <div class="field">
+              <label for="color-theme-select">Colour Theme</label>
+              <select class="input" id="color-theme-select">
+                <option value="custom">Custom</option>
+                <option value="coastal">Coastal</option>
+                <option value="loft">Loft</option>
+                <option value="sage">Sage</option>
+                <option value="linen">Linen</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="clear-time-input">Daily draft clear time</label>
+              <input type="time" class="input" id="clear-time-input" />
+              <p class="inline-note">Unsaved meal entries are cleared once per day at this time.</p>
+            </div>
+          </div>
+
+          <hr class="divider" />
+
+          <div class="settings-section">
+            <h2>Data Disclaimer</h2>
+            <div class="disclaimer">
+              <strong>Nutritional data sourced from Health Canada's <em>Nutrient Value of Some Common Foods</em> (2008).</strong>
+              Carb factors are approximate. Always verify with a qualified healthcare professional. The developers make no warranties and accept no liability.
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div><!-- /calculator-content -->
+
+    <!-- ── Recipe Builder Panel ──────────────────────────────────────────── -->
+    <aside class="recipe-panel" id="recipe-panel" hidden aria-label="Recipe Builder">
+      <div class="recipe-panel__header">
+        <span class="recipe-panel__title">Recipe Builder</span>
+        <button class="btn btn--icon" id="close-recipe-btn" aria-label="Close recipe builder">×</button>
+      </div>
+      <div class="field">
+        <label for="recipe-name-input">Recipe Name</label>
+        <input type="text" class="input input--sm" id="recipe-name-input" placeholder="e.g. Caesar Salad" />
+      </div>
+      <div class="recipe-tabs" id="recipe-tabs"></div>
+      <button class="btn btn--secondary btn--sm mb-8" id="new-recipe-btn">+ New Recipe</button>
+      <button class="btn btn--secondary btn--sm mb-8" id="clear-recipe-btn" style="margin-left:8px">Delete Recipe</button>
+      <div class="recipe-section-label">Add Ingredient</div>
+      <div class="recipe-entry-row">
+        <div>
+          <div class="food-entry-label">Food</div>
+          <input type="text" class="input input--sm" id="recipe-search-input" placeholder="Search…" autocomplete="off" />
+        </div>
+        <div>
+          <div class="food-entry-label">CF</div>
+          <input type="number" class="input input--sm" id="recipe-entry-cf" readonly tabindex="-1" />
+        </div>
+        <div>
+          <div class="food-entry-label">Weight (g)</div>
+          <input type="number" class="input input--sm" id="recipe-entry-weight" placeholder="g" min="0" step="1" />
+        </div>
+        <div>
+          <div class="food-entry-label">Carbs (g)</div>
+          <input type="number" class="input input--sm" id="recipe-entry-carbs" placeholder="g" min="0" step="0.1" />
+        </div>
+        <div style="display:flex;align-items:flex-end">
+          <button class="btn btn--primary btn--sm" id="recipe-add-ingredient-btn">+</button>
+        </div>
+      </div>
+      <div class="recipe-section-label">Ingredients</div>
+      <div style="overflow-x:auto">
+        <table class="recipe-ingredient-table">
+          <thead><tr><th>Ingredient</th><th>CF</th><th>Weight (g)</th><th>Carbs (g)</th><th></th></tr></thead>
+          <tbody id="recipe-ingredient-rows">
+            <tr><td colspan="5" style="padding:12px;text-align:center;color:var(--text-2);font-size:.8rem">No ingredients yet</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="recipe-totals">
+        <div class="recipe-totals__item"><span class="recipe-totals__label">Total Weight</span><span class="recipe-totals__value" id="recipe-total-weight">0 g</span></div>
+        <div class="recipe-totals__item"><span class="recipe-totals__label">Total Carbs</span><span class="recipe-totals__value" id="recipe-total-carbs">0 g</span></div>
+        <div class="recipe-totals__item"><span class="recipe-totals__label">Composite CF</span><span class="recipe-totals__value recipe-composite-cf" id="recipe-composite-cf">—</span></div>
+      </div>
+      <div class="recipe-section-label">Portion Served</div>
+      <div class="recipe-portion-row">
+        <div class="field">
+          <label for="recipe-portion-weight">Weight (g)</label>
+          <input type="number" class="input input--sm" id="recipe-portion-weight" placeholder="g" min="0" step="1" />
+        </div>
+        <div class="field">
+          <label for="recipe-portion-carbs">Carbs (g)</label>
+          <input type="number" class="input input--sm" id="recipe-portion-carbs" placeholder="g" min="0" step="0.1" />
+        </div>
+      </div>
+      <button class="btn btn--primary btn--full" id="recipe-add-to-meal-btn">Add to Meal</button>
+    </aside>
+
+    <!-- ── Food Search Panel ──────────────────────────────────────────────── -->
+    <aside class="recipe-panel" id="food-search-panel" hidden aria-label="Food Search">
+      <div class="recipe-panel__header">
+        <span class="recipe-panel__title">Food Search</span>
+        <button class="btn btn--icon" id="close-food-search-btn" aria-label="Close food search">×</button>
+      </div>
+      <div class="field">
+        <input type="text" class="input input--sm" id="food-search-input"
+               placeholder="Search past meals (e.g. Banana)…" autocomplete="off" />
+      </div>
+      <p class="tools-dropdown-note" id="food-search-offline-note" hidden>
+        Food Search requires an internet connection.
+      </p>
+      <div id="food-search-results"></div>
+    </aside>
+
+    <!-- ── Add Food to Chart Panel ───────────────────────────────────────── -->
+    <aside class="recipe-panel" id="add-food-panel" hidden aria-label="Add Food to Chart">
+      <div class="recipe-panel__header">
+        <span class="recipe-panel__title">Add Food to Chart</span>
+        <button class="btn btn--icon" id="close-add-food-btn" aria-label="Close add food">×</button>
+      </div>
+
+      <p class="tools-dropdown-note" id="add-food-offline-note" hidden>
+        Adding foods requires an internet connection.
+      </p>
+
+      <div class="recipe-section-label">Food Details</div>
+      <div class="field" style="position:relative">
+        <label for="add-food-name">Food Name</label>
+        <input type="text" class="input input--sm" id="add-food-name" placeholder="Start typing…" autocomplete="off" />
+        <div id="add-food-matches" class="match-list" hidden></div>
+        <div id="add-food-name-status" class="field-status"></div>
+      </div>
+      <div class="add-food-row">
+        <div class="field"><label for="add-food-portion">Portion (g)</label>
+          <input type="number" class="input input--sm" id="add-food-portion" min="0" step="0.1" /></div>
+        <div class="field"><label for="add-food-total-carbs">Total Carbs (g)</label>
+          <input type="number" class="input input--sm" id="add-food-total-carbs" min="0" step="0.1" /></div>
+      </div>
+      <div class="add-food-row">
+        <div class="field"><label for="add-food-fiber">Fiber (g)</label>
+          <input type="number" class="input input--sm" id="add-food-fiber" min="0" step="0.1" /></div>
+        <div class="field"><label for="add-food-cf">Carb Factor</label>
+          <input type="text" class="input input--sm" id="add-food-cf" disabled value="0.00" /></div>
+      </div>
+      <button class="btn btn--primary btn--sm mb-8" id="add-food-submit-btn" disabled style="width:100%;margin-top:14px">Add to Food Chart</button>
+    </aside>
+
+  </div><!-- /calculator-layout -->
+
+  <!-- ── Floating Tools Button (mobile) ───────────────────────────────────── -->
+  <div class="mobile-tools-wrapper" id="mobile-tools-wrapper">
+    <button class="mobile-tools-btn" id="mobile-tools-btn" aria-haspopup="true" aria-controls="mobile-tools-dropdown" aria-label="Tools">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="22" height="22"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+    <div class="mobile-tools-dropdown" id="mobile-tools-dropdown" hidden role="menu">
+      <button id="mobile-tools-export-current" role="menuitem">Export Current Meal</button>
+      <button id="mobile-tools-clear-current"  role="menuitem">Clear Current Meal</button>
+      <button id="mobile-tools-export-all"     role="menuitem">Export All Sheets (Today)</button>
+      <button id="mobile-tools-recipe"         role="menuitem">Recipe Builder</button>
+      <button id="mobile-tools-food-search"    role="menuitem">Food Search</button>
+      <button id="mobile-tools-add-food"       role="menuitem">Add Food to Chart</button>
+      <button id="mobile-tools-tracker"        role="menuitem">Post-Meal BG Tracker</button>
+      <button id="mobile-tools-restore-draft"  role="menuitem">Restore from Draft</button>
+    </div>
+  </div>
+
+  <nav class="bottom-nav" aria-label="Main navigation">
+    <button class="nav-btn active" data-nav="calculator" data-calc-tab="entry">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 8h2m4 0h2M8 12h2m4 0h2M8 16h2m4 0h2"/></svg>
+      Food
+    </button>
+    <button class="nav-btn" data-nav="calculator" data-calc-tab="factors">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+      Factors
+    </button>
+    <button class="nav-btn" data-nav="calculator" data-calc-tab="dose">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      Dose
+    </button>
+    <button class="nav-btn" data-nav="log">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+      Log
+    </button>
+    <button class="nav-btn" data-nav="settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      Settings
+    </button>
+  </nav>
+
+  <script>
+    function navigate(id) {
+      document.querySelectorAll('.section').forEach(s => s.hidden = true);
+      const t = document.getElementById(id); if (t) t.hidden = false;
+      document.querySelectorAll('[data-nav]').forEach(b => b.classList.toggle('active', b.dataset.nav === id));
+      window.location.hash = '#' + id;
+    }
+    if (window.innerWidth >= 1024) document.querySelector('.desktop-nav').style.display = 'flex';
+  </script>
+
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>
