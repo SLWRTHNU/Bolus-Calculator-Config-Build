@@ -1117,6 +1117,7 @@ async function addFoodSubmit() {
   try {
     const result = await addFood({ name, cf, abs });
     if (!result?.success) throw new Error(result?.error || 'Add failed');
+    await new Promise(r => setTimeout(r, 400)); // let the sheet write settle before reading back
     state.personalFoods = await getFoodChart();
     showToast(`${name} added to Food Chart`, 'success');
     addFoodClearFields();
