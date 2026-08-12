@@ -97,7 +97,8 @@ export async function getFoodChart() {
   const sheetId = storage.get('food_sheet_id');
   const token = await getAccessToken();
   const resp = await fetch(`${SHEETS_API}/${sheetId}/values/A2:C1000`, {
-    headers: { Authorization: `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
+    cache: 'no-store'
   });
   if (!resp.ok) return [];
   const data = await resp.json();
