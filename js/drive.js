@@ -113,17 +113,30 @@ export async function createSheet(name, parentId) {
   if (!resp.ok) throw new Error('Failed to create sheet');
   const sheet = await resp.json();
 
-  // Drive API v3 does not accept `parents` in a PATCH body — moving a file
-  // requires the addParents/removeParents query params instead.
-  const moveResp = await fetch(
-    `${DRIVE_API}/files/${sheet.spreadsheetId}?addParents=${parentId}&removeParents=root&fields=id,parents`,
-    {
-      method: 'PATCH',
-      headers: { Authorization: `Bearer ${token}` }
-    }
-  );
+  // Ask Drive what parent(s) the file actually has right now, rather than
+  // assuming 'root' — files created via the Sheets API (a different API
+  // product) may not report a removable 'root' parent under the drive.file
+  // OAuth scope, which was likely why removeParents=root silently failed.
+  const metaResp = await fetch(`${DRIVE_API}/files/${sheet.spreadsheetId}?fields=parents`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  const meta = metaResp.ok ? await metaResp.json() : {};
+  const currentParents = (meta.parents || []).join(',');
+  console.log('[drive] new sheet current parents before move:', meta.parents);
+
+  const moveUrl = new URL(`${DRIVE_API}/files/${sheet.spreadsheetId}`);
+  moveUrl.searchParams.set('addParents', parentId);
+  if (currentParents) moveUrl.searchParams.set('removeParents', currentParents);
+  moveUrl.searchParams.set('fields', 'id,parents');
+
+  const moveResp = await fetch(moveUrl, {
+    method: 'PATCH',
+    headers: { Authorization: `Bearer ${token}` }
+  });
   if (!moveResp.ok) {
-    console.error('Failed to move sheet into folder:', await moveResp.text());
+    console.error('[drive] Failed to move sheet into folder:', await moveResp.text());
+  } else {
+    console.log('[drive] sheet moved successfully:', await moveResp.json());
   }
 
   return sheet.spreadsheetId;
