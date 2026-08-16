@@ -1117,8 +1117,10 @@ async function addFoodSubmit() {
   try {
     const result = await addFood({ name, cf, abs });
     if (!result?.success) throw new Error(result?.error || 'Add failed');
-    await new Promise(r => setTimeout(r, 400)); // let the sheet write settle before reading back
-    state.personalFoods = await getFoodChart();
+    // Update the local list directly instead of re-reading the sheet —
+    // avoids depending on how fast the write becomes readable.
+    state.personalFoods = state.personalFoods.filter(f => f.name.toLowerCase() !== name.toLowerCase());
+    state.personalFoods.push({ name, cf, abs });
     showToast(`${name} added to Food Chart`, 'success');
     addFoodClearFields();
   } catch (err) {
