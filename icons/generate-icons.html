@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head><title>Icon Generator</title></head>
+<body>
+<p>Open this file in a browser, then right-click each canvas and "Save image as" to get icon-192.png and icon-512.png.</p>
+
+<canvas id="c192" width="192" height="192"></canvas>
+<canvas id="c512" width="512" height="512"></canvas>
+
+<script>
+function drawIcon(canvas, size) {
+  const ctx = canvas.getContext('2d');
+  const s = size / 512;
+
+  // Background
+  ctx.fillStyle = '#6366f1';
+  roundRect(ctx, 0, 0, size, size, 96 * s);
+  ctx.fill();
+
+  // Syringe body
+  ctx.fillStyle = 'rgba(255,255,255,0.95)';
+  roundRect(ctx, 180*s, 140*s, 60*s, 200*s, 10*s);
+  ctx.fill();
+
+  // Plunger
+  ctx.fillStyle = 'rgba(255,255,255,0.7)';
+  roundRect(ctx, 200*s, 120*s, 20*s, 30*s, 4*s);
+  ctx.fill();
+
+  // Tip
+  ctx.fillStyle = 'rgba(255,255,255,0.9)';
+  roundRect(ctx, 200*s, 340*s, 20*s, 50*s, 4*s);
+  ctx.fill();
+
+  // Tick marks
+  ctx.fillStyle = 'rgba(99,102,241,0.6)';
+  [190,220,250,280].forEach(y => {
+    roundRect(ctx, 180*s, y*s, 20*s, 4*s, 2*s);
+    ctx.fill();
+  });
+
+  // Loop arc
+  ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+  ctx.lineWidth = 18*s;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(290*s, 200*s);
+  ctx.quadraticCurveTo(370*s, 200*s, 370*s, 280*s);
+  ctx.quadraticCurveTo(370*s, 360*s, 290*s, 360*s);
+  ctx.stroke();
+
+  // Arrow
+  ctx.fillStyle = 'rgba(255,255,255,0.9)';
+  ctx.beginPath();
+  ctx.moveTo(275*s, 340*s);
+  ctx.lineTo(295*s, 360*s);
+  ctx.lineTo(275*s, 380*s);
+  ctx.closePath();
+  ctx.fill();
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+drawIcon(document.getElementById('c192'), 192);
+drawIcon(document.getElementById('c512'), 512);
+
+// Auto-download
+['192','512'].forEach(sz => {
+  const canvas = document.getElementById('c' + sz);
+  const a = document.createElement('a');
+  a.download = `icon-${sz}.png`;
+  a.href = canvas.toDataURL();
+  a.textContent = `Download icon-${sz}.png`;
+  a.style.display = 'block';
+  a.style.margin = '8px 0';
+  document.body.appendChild(a);
+});
+</script>
+</body>
+</html>
