@@ -183,7 +183,45 @@ async function postBackendSetup() {
     setupNightscoutPolling();
     clearBolusTimer();
     startBolusTimerIfLocked();
+    await checkDayRollover();
   } catch (err) { showToast('Backend sync error: ' + err.message, 'error'); }
+}
+
+// Runs once per app load, after draft data (possibly from a prior day) has
+// been restored into state.meals. The 23:50 setInterval in setupExportTimer
+// only fires while the tab/PWA stays open — close it overnight and it never
+// fires at all, so leftover meal data from a previous day just sits in the
+// draft. Without this check, the next time the interval *does* fire it would
+// stamp that stale data with the current date instead of the date it was
+// actually for. This compares the date the in-progress data belongs to
+// against today and, if a day has rolled over, exports it under the correct
+// (past) date and resets before anything else touches it.
+async function checkDayRollover() {
+  const activeDate = storage.get('active_data_date');
+  const today = todayStr();
+  if (!activeDate) { storage.set('active_data_date', today); return; }
+  if (activeDate === today) return;
+
+  const meals = buildDayExportPayload(MEAL_SLUGS);
+  if (meals.some(m => m.hasData)) {
+    try {
+      if (state.connected) {
+        const result = await logMeal({ meals, units: state.units, date: activeDate });
+        if (result?.success) {
+          showToast(`Exported ${activeDate}'s log (app was closed overnight)`, 'success');
+        } else {
+          throw new Error(result?.error || 'Export failed');
+        }
+      } else {
+        throw new Error('offline');
+      }
+    } catch (err) {
+      console.error('Day-rollover export failed:', err);
+      downloadCSV(flattenToCSVRows(meals));
+      showToast(`${activeDate}'s log saved locally (offline)`, 'info');
+    }
+  }
+  await resetAllTransientDayState();
 }
 
 function updateConnectionStatus() {
@@ -1331,6 +1369,7 @@ async function exportTodayAndClear() {
 async function resetAllTransientDayState() {
   MEAL_SLUGS.forEach(clearMeal);
   setTodayLog([]);
+  storage.set('active_data_date', todayStr());
 
   state.recipes = [createRecipe()];
   state.activeRecipeIndex = 0;
