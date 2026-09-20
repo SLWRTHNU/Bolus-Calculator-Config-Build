@@ -9,7 +9,7 @@ import * as driveBackend from './drive-backend.js';
 import { storage } from './storage.js';
 
 function activeBackend() {
-  return storage.get('use_drive_backend', false) ? driveBackend : appsScriptBackend;
+  return storage.get('use_drive_backend', true) ? driveBackend : appsScriptBackend;
 }
 
 export const ping                = (...args) => activeBackend().ping(...args);
@@ -25,7 +25,7 @@ export const snapshotDraftState  = (...args) => activeBackend().snapshotDraftSta
 export const restoreDraftState   = (...args) => activeBackend().restoreDraftState(...args);
 
 export function isDriveBackendActive() {
-  return storage.get('use_drive_backend', false);
+  return storage.get('use_drive_backend', true);
 }
 
 export function setDriveBackendActive(on) {
