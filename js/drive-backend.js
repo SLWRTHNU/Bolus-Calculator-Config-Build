@@ -241,7 +241,10 @@ export async function logMeal(payload) {
   await ensureSetup();
   if (!payload || !Array.isArray(payload.meals)) return { success: false };
 
-  const dateStr = payload.date || new Date().toISOString().slice(0, 10);
+  const dateStr = payload.date || (() => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  })();
 
   try {
     const { docId, dayLabel } = await ensureExportDocForDate(dateStr);
