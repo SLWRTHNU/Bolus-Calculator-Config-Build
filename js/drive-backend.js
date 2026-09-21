@@ -184,11 +184,15 @@ export async function getFoodChart() {
   if (!resp.ok) return [];
   const data = await resp.json();
   return (data.values || [])
-    .map(row => ({
-      name: row[0] || '',
-      cf: parseFloat(row[1]) || null,
-      abs: parseFloat(row[2]) || null
-    }))
+        .map(row => {
+      const cfRaw = parseFloat(row[1]);
+      const absRaw = parseFloat(row[2]);
+      return {
+        name: row[0] || '',
+        cf: Number.isNaN(cfRaw) ? null : cfRaw,
+        abs: Number.isNaN(absRaw) ? null : absRaw
+      };
+    })
     .filter(f => f.name);
 }
 
