@@ -638,7 +638,8 @@ function setupCustomFoodPanel() {
   document.getElementById('custom-add-btn')?.addEventListener('click', () => {
     const name = nameInput?.value?.trim();
     if (!name) { showToast('Enter a food name', 'error'); return; }
-    const cf = parseFloat(cfInput?.value) || null;
+    const cfParsed = parseFloat(cfInput?.value);
+    const cf = Number.isNaN(cfParsed) ? null : cfParsed;
     const w  = parseFloat(weightInput?.value) || 0;
     const c  = parseFloat(carbsInput?.value) || 0;
     if (!w && !c) { showToast('Enter weight or carbs', 'error'); return; }
