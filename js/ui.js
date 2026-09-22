@@ -52,7 +52,7 @@ export function applyTheme(value) {
 }
 
 export function initTheme() {
-  const savedColor = storage.get('color_theme', 'custom');
+  const savedColor = storage.get('color_theme', 'loft');
   const savedMode  = storage.get('mode', 'system');
   applyColorTheme(savedColor);
   applyMode(savedMode);
