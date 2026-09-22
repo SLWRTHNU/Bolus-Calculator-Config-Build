@@ -300,3 +300,12 @@ export async function restoreDraftState() {
   const result = await getDraftState();
   return result ? result.draft : null;
 }
+
+export async function setFullDraftState(allData) {
+  if (!isConnected()) return { success: false };
+  await ensureSetup();
+  const folderId = storage.get('drive_config_folder_id');
+  await writeJsonFile('draft.json', allData, folderId);
+  return { success: true };
+}
+
