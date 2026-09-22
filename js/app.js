@@ -166,11 +166,13 @@ async function postBackendSetup() {
     state.personalFoods = await getFoodChart();
 
     const draft = await getDraftState();
-    if (draft && draft.data && Object.keys(draft.data).length > 0) {
-      applyDraftToState(draft.data);
+    const draftData = draft?.draft?.data;
+    if (draftData && Object.keys(draftData).length > 0) {
+      applyDraftToState(draftData);
     }
-    if (draft && draft.data && draft.data.recipes && draft.data.recipes.length) {
-      state.recipes = draft.data.recipes.map(r => ({
+    
+    if (draftData && draftData.recipes && draftData.recipes.length) {
+      state.recipes = draftData.recipes.map(r => ({
         name: r.name || '',
         ingredients: r.ingredients || [],
         entryFood: { name: '', carbFactor: null, weightG: '', carbsG: '' }
