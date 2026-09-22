@@ -591,7 +591,7 @@ function setupFoodEntryRow() {
     if (cfInput)     cfInput.value = '';
     if (weightInput) weightInput.value = '';
     if (carbsInput)  carbsInput.value = '';
-    renderFoodTable(); updateBolusLive(); triggerSnapshot();
+    renderFoodTable(); updateBolusLive(); persistDraftState();
   });
 }
 
@@ -646,7 +646,7 @@ function setupCustomFoodPanel() {
     const weight = w || (cf ? Math.round((c / cf) * 10) / 10 : 0);
     getCurrentMeal().foods.push({ name, carbFactor: cf, weightG: weight, absorptionRate: 3.0 });
     enterStandardMode();
-    renderFoodTable(); updateBolusLive(); triggerSnapshot();
+    renderFoodTable(); updateBolusLive(); persistDraftState();
   });
 }
 
@@ -1528,7 +1528,7 @@ function setupRecipePanel() {
         weightG: ing.weightG
       }))
     });
-    renderFoodTable(); updateBolusLive(); showToast('Recipe added to meal', 'success'); triggerSnapshot();
+    renderFoodTable(); updateBolusLive(); showToast('Recipe added to meal', 'success'); persistDraftState();
   });
   document.getElementById('recipe-name-input')?.addEventListener('input', e => {
     const recipe = state.recipes[state.activeRecipeIndex]; if (recipe) recipe.name = e.target.value;
