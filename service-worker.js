@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lbc-v2';
+const CACHE_NAME = 'lbc-v3';
 const APP_SHELL = [
   '/',
   '/index.html',
