@@ -323,6 +323,7 @@ function serializeMealForDraft(slug) {
 }
 
 function applyDraftToState(draftData) {
+  console.log('[debug] applyDraftToState called with:', JSON.stringify(draftData));
   if (!draftData) return;
   MEAL_SLUGS.forEach(slug => {
     const d = draftData[slug];
